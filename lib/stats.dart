@@ -1,10 +1,5 @@
-// random_number_plot_screen.dart
-import 'dart:math';
 import 'dart:async';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
-import 'package:provider/provider.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:fast_noise/fast_noise.dart';
 
@@ -128,30 +123,32 @@ class _RandomNumberPlotScreenState extends State<RandomNumberPlotScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('溫度濕度感測'),
+        title: Text('溫度濕度即時感測數據'),
       ),
       body: Center(
         child: Padding(
           padding: const EdgeInsets.all(8.0),
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('田地「東南方丘陵」- 即時感測數據', style: TextStyle(fontSize: 32)),
+              Text('田地「東南方丘陵」', style: TextStyle(fontSize: 24)),
               Text('更新頻率：${updatePeriod / 1000} 分鐘', style: TextStyle(fontSize: 16)),
               Text('時間：${DateTime.now().toString()}', style: TextStyle(fontSize: 16)),
-              SizedBox(height: 20),
-              Text('eFarm AI 分析：溫度適中，濕度適中，光照適中，肥沃度適中', style: TextStyle(fontSize: 16)),
-              Text('AI 建議：注意山區午後強降雨，注意防曬', style: TextStyle(fontSize: 16)),
-              SizedBox(height: 20),
+              SizedBox(height: 8),
+              Text('AI 分析：\n溫度適中，濕度適中，光照適中，肥沃度適中', style: TextStyle(fontSize: 16)),
+              Text('AI 建議：\n注意山區午後強降雨，注意防曬', style: TextStyle(fontSize: 16)),
+              SizedBox(height: 8),
               Expanded(
                 child: SingleChildScrollView(
                   child: ListView.builder(
                     shrinkWrap: true,
                     itemCount: randData.length,
                     itemBuilder: (context, index) {
-                      return SizedBox(
-                        height: 180,
+                      return Expanded(
+                        // height: 140,
                         child: ListTile(
-                          leading: Row(
+                          // leading: ,
+                          title: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               Icon(Icons.circle,
@@ -161,11 +158,14 @@ class _RandomNumberPlotScreenState extends State<RandomNumberPlotScreen> {
                                 width: 160,
                                 child: Text(
                                     ' ${randData[index].title} : ${randData[index].latest.toStringAsFixed(2)}',
-                                    style: TextStyle(fontSize: 20)),
+                                    style: TextStyle(fontSize: 16)),
                               )
                             ],
                           ),
-                          title: _buildChart(index),
+                          subtitle: SizedBox(
+                              height: 140,
+                            child: _buildChart(index)
+                            ),
                         ),
                       );
                     },
