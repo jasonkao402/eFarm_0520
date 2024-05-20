@@ -4,8 +4,34 @@ import 'dart:math';
 import 'radar_provider.dart';
 
 class RadarScreen extends StatefulWidget {
+  const RadarScreen({super.key});
+
   @override
-  _RadarScreenState createState() => _RadarScreenState();
+  State<RadarScreen> createState() => _RadarScreenState();
+}
+
+class RadarProvider extends ChangeNotifier {
+  final List<Offset> points = [];
+  double radarAngle = 0;
+
+  RadarProvider() {
+    _generateRandomPoints();
+  }
+
+  void _generateRandomPoints() {
+    final random = Random();
+    for (int i = 0; i < 20; i++) {
+      double x = random.nextDouble() * 300 - 150;
+      double y = random.nextDouble() * 300 - 150;
+      points.add(Offset(x, y));
+    }
+    notifyListeners();
+  }
+
+  void updateRadarAngle(double delta) {
+    radarAngle = (radarAngle + delta) % 360;
+    notifyListeners();
+  }
 }
 
 class _RadarScreenState extends State<RadarScreen> with SingleTickerProviderStateMixin {
