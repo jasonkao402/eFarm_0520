@@ -14,7 +14,7 @@ class RandomNumberPlotScreen extends StatefulWidget {
 }
 
 class RandData {
-  static const int _maxNumbers = 30;
+  static const int _maxNumbers = 45;
   final String title, unit;
   final double mean, stdDev;
   final PerlinFractalNoise _rng;
@@ -247,7 +247,7 @@ class _RandomNumberPlotScreenState extends State<RandomNumberPlotScreen> {
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
                           Text('天氣預報\n'
-                          '日出 : 06:23 | 日落 : 17:49'),
+                          '日出 : 05:23 | 日落 : 18:13'),
                           FittedBox(
                             alignment: Alignment.center,
                             child: Row(
@@ -259,7 +259,7 @@ class _RandomNumberPlotScreenState extends State<RandomNumberPlotScreen> {
                                     margin: EdgeInsets.all(2),
                                     decoration: BoxDecoration(
                                       color: Colors.grey[850],
-                                      borderRadius: BorderRadius.circular(16.0),
+                                      borderRadius: BorderRadius.circular(8.0),
                                     ),
                                     child: Column(
                                       mainAxisAlignment:

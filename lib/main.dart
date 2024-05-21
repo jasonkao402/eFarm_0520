@@ -1,6 +1,7 @@
 // ignore_for_file: camel_case_types
 import 'package:flutter/material.dart';
 import 'stats.dart';
+import 'schedule.dart';
 
 void main() {
   runApp(const MainApp());
@@ -40,10 +41,10 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   final List<funcPage> pages = [
     funcPage('Stats', RandomNumberPlotScreen(), BottomNavigationBarItem(icon: Icon(Icons.calculate), label: 'Stats')),
-    funcPage('Schedule', Text('Schedule'), BottomNavigationBarItem(icon: Icon(Icons.schedule), label: 'Schedule')),
+    funcPage('Schedule', ScheduleApp(), BottomNavigationBarItem(icon: Icon(Icons.schedule), label: 'Schedule')),
     funcPage('Radar', Text('Radar'), BottomNavigationBarItem(icon: Icon(Icons.radar), label: 'Radar')),
   ];
-  int _currentIndex = 0;
+  int _currentIndex = 1;
   List<Widget> _screens = List.empty(growable: true);
 
   @override
