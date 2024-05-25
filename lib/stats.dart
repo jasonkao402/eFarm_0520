@@ -1,14 +1,20 @@
-// ignore_for_file: prefer_const_literals_to_create_immutables
-import 'dart:async';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:fl_chart/fl_chart.dart';
-import 'package:fast_noise/fast_noise.dart';
 import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
+import 'randomPlot.dart';
+import 'schedule.dart';
 import 'util.dart';
 
 class StatsScreen extends StatelessWidget {
   const StatsScreen({super.key});
+
+  static List<CropEnum> schedule = [
+    CropEnum.millet,
+    CropEnum.corn,
+    CropEnum.wheat,
+    CropEnum.rice,
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -47,6 +53,18 @@ class StatsScreen extends StatelessWidget {
         padding: EdgeInsets.all(8.0),
         child: CustomScrollView(
           slivers: <Widget>[
+            SliverAppBar(
+              expandedHeight: 300.0,
+              floating: false,
+              pinned: true,
+              flexibleSpace: FlexibleSpaceBar(
+                title: Text('阿傑的蔬菜田'),
+                background: Image.asset(
+                  'assets/myfarm.jpg',
+                  fit: BoxFit.cover,
+                ),
+              ),
+            ),
             SliverToBoxAdapter(
               child: Container(
                 margin: EdgeInsets.symmetric(vertical: 4),
@@ -55,12 +73,59 @@ class StatsScreen extends StatelessWidget {
                   border: Border.all(color: Colors.grey, width: 2.0),
                   borderRadius: BorderRadius.circular(16.0),
                 ),
-                child: Text(
-                  '名稱 : 阿傑的蔬菜田\n'
-                  '地點 : 高雄市鼓山區\n'
-                  '時間 : ${DateFormat('yyyy/MM/dd kk:mm').format(DateTime.now())}\n'
-                  '更新頻率 : 1 分鐘',
-                  style: TextStyle(fontSize: 16),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      flex: 2,
+                      child: Text(
+                        '名稱 : 阿傑的蔬菜田\n'
+                        '地點 : 高雄市鼓山區\n'
+                        '時間 : ${DateFormat('yyyy/MM/dd kk:mm:ss').format(DateTime.now())}\n'
+                        '更新頻率 : 1 分鐘',
+                        style: TextStyle(fontSize: 16),
+                      ),
+                    ),
+                    Expanded(flex: 1, child: Text('')),
+                    Expanded(
+                      flex: 3,
+                      child: FittedBox(
+                        child: SizedBox(
+                          height: 200,
+                          // width: 800,
+                          child: ListView.builder(
+                            shrinkWrap: true,
+                            scrollDirection: Axis.horizontal,
+                            physics: const NeverScrollableScrollPhysics(),
+                            itemCount: 4,
+                            itemBuilder: (BuildContext context, int index) {
+                              return Container(
+                                margin: EdgeInsets.all(2),
+                                decoration: BoxDecoration(
+                                  color: schedule[index] == CropEnum.empty
+                                      ? Colors.grey
+                                      : defCrops[schedule[index].index].color,
+                                  borderRadius: BorderRadius.circular(20.0),
+                                ),
+                                alignment: Alignment.center,
+                                child: DecoratedBox(
+                                  decoration: BoxDecoration(
+                                    // color: Colors.white,
+                                    borderRadius: BorderRadius.circular(8.0),
+                                  ),
+                                  child: Text(
+                                      '區域 ${index + 1} : ${defCrops[schedule[index].index].displayName}',
+                                      style: TextStyle(
+                                          fontSize: 24, color: Colors.black)),
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),
@@ -120,188 +185,5 @@ class StatsScreen extends StatelessWidget {
         ),
       ),
     );
-  }
-}
-
-class RandomNumberPlotScreen extends StatefulWidget {
-  const RandomNumberPlotScreen({super.key});
-
-  @override
-  State<RandomNumberPlotScreen> createState() => _RandomNumberPlotScreenState();
-}
-
-class RandData {
-  static const int _maxNumbers = 60;
-  final String title, unit;
-  final double mean, stdDev;
-  final PerlinFractalNoise _rng;
-  final List<double> _numbers = List.empty(growable: true);
-  final Color color;
-
-  List<double> get numbers => List.unmodifiable(_numbers);
-  double get latest => _numbers.last;
-  double x = 0, frequency = 0.005;
-
-  void init() {
-    _numbers.clear();
-    x = 0;
-    while (_numbers.length < _maxNumbers) {
-      _numbers.add(_rng.getNoise2(x, 0) * stdDev + mean);
-      x += frequency;
-    }
-  }
-
-  void update() {
-    while (_numbers.length > _maxNumbers) {
-      _numbers.removeAt(0);
-    }
-    x += frequency;
-    _numbers.add(_rng.getNoise2(x, 0) * stdDev + mean);
-  }
-
-  RandData(
-      this.title, this.unit, this.color, this.mean, this.stdDev, this._rng);
-}
-
-class _RandomNumberPlotScreenState extends State<RandomNumberPlotScreen> {
-  late Timer timer;
-
-  static const int updatePeriod = 15;
-  final List<RandData> randData = [
-    RandData(
-        '溫度',
-        '°C',
-        Colors.red,
-        21,
-        5,
-        PerlinFractalNoise(
-            seed: DateTime.now().millisecond, frequency: 1, octaves: 5)),
-    RandData(
-        '濕度',
-        '%',
-        Colors.blue,
-        50,
-        10,
-        PerlinFractalNoise(
-            seed: DateTime.now().millisecond * 2, frequency: 0.5, octaves: 4)),
-    RandData(
-        '光照',
-        'lux',
-        Colors.yellow,
-        75,
-        5,
-        PerlinFractalNoise(
-            seed: DateTime.now().millisecond * 3, frequency: 3, octaves: 3)),
-    RandData(
-        '肥沃度',
-        'ppm',
-        Colors.green,
-        50,
-        6,
-        PerlinFractalNoise(
-            seed: DateTime.now().millisecond * 5, frequency: 1, octaves: 2)),
-  ];
-
-  @override
-  void initState() {
-    super.initState();
-    for (var data in randData) {
-      data.init();
-    }
-    // weatherReport = genRandWeatherReport();
-    timer = Timer.periodic(Duration(seconds: updatePeriod), (timer) {
-      setState(() {
-        for (var data in randData) {
-          data.update();
-        }
-      });
-    });
-  }
-
-  List<Widget> buildStatChart() {
-    return randData
-        .map(
-          (stats) => Scaffold(
-              appBar: AppBar(
-                title: Row(
-                  children: [
-                    Icon(Icons.circle, color: stats.color),
-                    Text(
-                        ' ${stats.title} : ${stats.latest.toStringAsFixed(3)} ${stats.unit}',
-                        style: TextStyle(fontSize: 16)),
-                  ],
-                ),
-              ),
-              body: Container(
-                height: 300,
-                decoration: BoxDecoration(
-                  color: Colors.grey[850],
-                  borderRadius: BorderRadius.circular(16.0),
-                ),
-                // child: FittedBox(
-                //   fit: BoxFit.scaleDown,
-                  child: LineChart(
-                    LineChartData(
-                      minY: stats.mean - stats.stdDev * 1,
-                      maxY: stats.mean + stats.stdDev * 1,
-                      baselineY: stats.mean,
-                      lineBarsData: [
-                        LineChartBarData(
-                          spots: stats.numbers
-                              .asMap()
-                              .entries
-                              .map((e) => FlSpot(e.key.toDouble(), e.value))
-                              .toList(),
-                          isCurved: true,
-                          color: stats.color,
-                          barWidth: 2,
-                          isStrokeCapRound: true,
-                          dotData: FlDotData(show: false),
-                          belowBarData: BarAreaData(
-                            show: true,
-                            color: stats.color.withOpacity(.25),
-                          ),
-                        ),
-                      ],
-                      borderData: FlBorderData(
-                        show: true,
-                        border: Border.all(color: Colors.grey),
-                      ),
-                      gridData: FlGridData(show: false),
-                    ),
-                    duration: const Duration(),
-                  ),
-                ),
-              )
-              // child: Column(
-              //   children: [
-              //     Container(
-              //       margin: EdgeInsets.all(16.0),
-              //       child:
-              //     ),
-              //   ],
-              // ),
-              // ),
-        )
-        .toList();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return SliverGrid(
-      delegate: SliverChildListDelegate(buildStatChart()),
-      gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-        maxCrossAxisExtent: 600.0,
-        mainAxisSpacing: 4,
-        crossAxisSpacing: 4,
-        childAspectRatio: 4 / 3,
-      ),
-    );
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-    timer.cancel();
   }
 }

@@ -1,6 +1,20 @@
 import 'package:flutter/material.dart';
 import 'dart:math';
 
+enum CropEnum {
+  empty,
+  millet,
+  corn,
+  wheat,
+  rice,
+  bean,
+  carrot,
+  potato,
+  radish,
+  cabbage,
+  sorghum,
+}
+
 List<List<Text>> genRandWeatherReport() {
   List<List<Text>> report = [];
   DateTime time;

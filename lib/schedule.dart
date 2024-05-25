@@ -1,25 +1,12 @@
 import 'package:flutter/material.dart';
 import 'dart:math';
+import 'util.dart';
 
 class ScheduleApp extends StatefulWidget {
   const ScheduleApp({super.key});
 
   @override
   State<ScheduleApp> createState() => _ScheduleAppState();
-}
-
-enum CropEnum {
-  empty,
-  millet,
-  corn,
-  wheat,
-  rice,
-  bean,
-  carrot,
-  potato,
-  radish,
-  cabbage,
-  sorghum,
 }
 
 class CropType {
@@ -31,24 +18,25 @@ class CropType {
   CropType(this.idName, this.displayName, this.growTime, this.color);
 }
 
+final List<CropType> defCrops = [
+  CropType('empty', '空地', 1, Colors.grey),
+  CropType('millet', '小米', 6, Colors.amber.shade200),
+  CropType('corn', '玉米', 6, Colors.yellow),
+  CropType('wheat', '小麥', 6, Colors.amber),
+  CropType('rice', '稻米', 6, Colors.amber.shade100),
+  CropType('bean', '豆子', 3, Colors.green),
+  CropType('carrot', '胡蘿蔔', 2, Colors.orange),
+  CropType('potato', '樹薯', 3, Colors.brown),
+  CropType('radish', '甜菜根', 2, Colors.red),
+  CropType('cabbage', '高麗菜', 3, Colors.green.shade200),
+  CropType('sorghum', '高粱', 4, Colors.red.shade200),
+];
+
 class _ScheduleAppState extends State<ScheduleApp> {
-  final List<CropType> defCrops = [
-    CropType('empty', '空地', 1, Colors.grey),
-    CropType('millet', '小米', 6, Colors.amber.shade200),
-    CropType('corn', '玉米', 6, Colors.yellow),
-    CropType('wheat', '小麥', 6, Colors.amber),
-    CropType('rice', '稻米', 6, Colors.amber.shade100),
-    CropType('bean', '豆子', 3, Colors.green),
-    CropType('carrot', '胡蘿蔔', 2, Colors.orange),
-    CropType('potato', '馬鈴薯', 3, Colors.brown),
-    CropType('radish', '甜菜根', 2, Colors.red),
-    CropType('cabbage', '高麗菜', 3, Colors.green.shade200),
-    CropType('sorghum', '高粱', 4, Colors.red.shade200),
-  ];
   List<CropEnum> grid = List.generate(4, (_) => CropEnum.empty);
   List<CropEnum> schedule = List.filled(200, CropEnum.empty, growable: true);
   int curindex = 0;
-
+  DateTime topdate = DateTime.now();
   @override
   void initState() {
     super.initState();
@@ -56,10 +44,10 @@ class _ScheduleAppState extends State<ScheduleApp> {
       schedule[i] = CropEnum.empty;
     }
     for (int i = 0; i < 4; i++) {
-      plant(i, 0, CropEnum.values[Random().nextInt(4) + 1]);
-      plant(i, Random().nextInt(5) + 6,
+      setPlant(i, 0, CropEnum.values[i + 1]);
+      setPlant(i, Random().nextInt(5) + 6,
           CropEnum.values[Random().nextInt(defCrops.length - 1) + 1]);
-      plant(i, Random().nextInt(5) + 12,
+      setPlant(i, Random().nextInt(5) + 17,
           CropEnum.values[Random().nextInt(defCrops.length - 1) + 1]);
     }
   }
@@ -69,7 +57,7 @@ class _ScheduleAppState extends State<ScheduleApp> {
     super.dispose();
   }
 
-  bool plant(int idx, int start, CropEnum crop) {
+  bool checkPlant(int idx, int start, CropEnum crop) {
     // check if the land is empty
     if (crop != CropEnum.empty) {
       for (int i = 0; i < defCrops[crop.index].growTime; i++) {
@@ -78,19 +66,35 @@ class _ScheduleAppState extends State<ScheduleApp> {
         }
       }
     }
+    return true;
+  }
+
+  void setPlant(int idx, int start, CropEnum crop) {
+    int j = 0;
     setState(() {
-      for (int i = 0; i < defCrops[crop.index].growTime; i++) {
-        schedule[idx + (i + start) * 4] = crop;
+      if (crop == CropEnum.empty) {
+        j = defCrops[schedule[idx + start * 4].index].growTime;
+        while (start > 0 &&
+            schedule[idx + (start - 1) * 4] == schedule[idx + start * 4]) {
+          start--;
+        }
+        for (int i = 0; i < j; i++) {
+          schedule[idx + (i + start) * 4] = crop;
+        }
+      } else {
+        j = defCrops[crop.index].growTime;
+        for (int i = 0; i < j; i++) {
+          schedule[idx + (i + start) * 4] = crop;
+        }
       }
     });
-    return true;
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('作物種植排程'),
+        title: Text('作物種植排程 ${topdate.year} 年 ${topdate.month} 月'),
       ),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -168,6 +172,8 @@ class _ScheduleAppState extends State<ScheduleApp> {
                     onPressed: () {
                       setState(() {
                         curindex = index ~/ 4;
+                        topdate =
+                            DateTime.now().add(Duration(days: curindex * 30));
                       });
                     },
                     onLongPress: () {
@@ -176,15 +182,44 @@ class _ScheduleAppState extends State<ScheduleApp> {
                           builder: (context) {
                             return AlertDialog(
                               title: Text(
-                                  '選擇作物 - 農地 : ${index % 4 + 1} - ${date.year} 年 ${date.month} 月'),
+                                  '選擇作物 - 區域 : ${index % 4 + 1} - ${date.year} 年 ${date.month} 月'),
                               content: Column(
                                 children: [
                                   for (int i = 0; i < defCrops.length; i++)
                                     TextButton(
                                         onPressed: () {
-                                          plant(index % 4, index ~/ 4,
-                                              CropEnum.values[i]);
-                                          Navigator.of(context).pop();
+                                          if (checkPlant(index % 4, index ~/ 4,
+                                              CropEnum.values[i])) {
+                                            setPlant(index % 4, index ~/ 4,
+                                                CropEnum.values[i]);
+
+                                            ScaffoldMessenger.of(context)
+                                                .showSnackBar(SnackBar(
+                                              content: Text(i == 0
+                                                  ? '已移除規劃'
+                                                  : '已規劃於 ${date.year} 年 ${date.month} 月種植 ${defCrops[i].displayName}}'),
+                                            ));
+                                            Navigator.of(context).pop();
+                                          } else {
+                                            showDialog(
+                                              context: context,
+                                              builder: (context) {
+                                                return AlertDialog(
+                                                  title: Text('無法種植'),
+                                                  content: Text('該地已經有作物種植了'),
+                                                  actions: [
+                                                    TextButton(
+                                                      onPressed: () {
+                                                        Navigator.of(context)
+                                                            .pop();
+                                                      },
+                                                      child: Text('確定'),
+                                                    ),
+                                                  ],
+                                                );
+                                              },
+                                            );
+                                          }
                                         },
                                         child: Row(
                                           children: [
