@@ -38,13 +38,13 @@ List<List<Text>> genRandWeatherReport() {
   ];
 
   for (; i < 7; i++) {
-    l = 10 + Random().nextInt(6);
+    l = 12 + Random().nextInt(6);
     h = l + 4 + Random().nextInt(4);
     time = DateTime.now().add(Duration(days: i));
     report.add([
       Text('${time.month}/${time.day}'),
       Text(defaultWeather[Random().nextInt(defaultWeather.length)],
-          style: TextStyle(fontSize: 24.0)),
+          style: TextStyle(fontSize: 28.0)),
       Text('🔺 $h°C\n🔻 $l°C'),
     ]);
   }

@@ -1,6 +1,4 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 import 'randomPlot.dart';
 import 'schedule.dart';
@@ -59,8 +57,9 @@ class StatsScreen extends StatelessWidget {
               pinned: true,
               flexibleSpace: FlexibleSpaceBar(
                 title: Text('阿傑的蔬菜田'),
+                centerTitle: false,
                 background: Image.asset(
-                  'assets/myfarm.jpg',
+                  'assets/myFarm.jpg',
                   fit: BoxFit.cover,
                 ),
               ),
@@ -80,23 +79,29 @@ class StatsScreen extends StatelessWidget {
                     Expanded(
                       flex: 2,
                       child: Text(
-                        '名稱 : 阿傑的蔬菜田\n'
-                        '地點 : 高雄市鼓山區\n'
-                        '時間 : ${DateFormat('yyyy/MM/dd kk:mm:ss').format(DateTime.now())}\n'
-                        '更新頻率 : 1 分鐘',
+                        // '名稱 : \n阿傑的蔬菜田\n'
+                        '地點 : \n高雄市鼓山區\n'
+                        '時間 : \n${DateFormat('yyyy/MM/dd kk:mm:ss').format(DateTime.now())}\n'
+                        '更新頻率 : \n1 分鐘',
                         style: TextStyle(fontSize: 16),
                       ),
                     ),
-                    Expanded(flex: 1, child: Text('')),
+                    // Expanded(flex: 1, child: Text('')),
                     Expanded(
                       flex: 3,
                       child: FittedBox(
                         child: SizedBox(
-                          height: 200,
-                          // width: 800,
-                          child: ListView.builder(
+                          // height: 200,
+                          width: 400,
+                          child: GridView.builder(
                             shrinkWrap: true,
-                            scrollDirection: Axis.horizontal,
+                            gridDelegate:
+                                SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 2,
+                              crossAxisSpacing: 4.0,
+                              mainAxisSpacing: 4.0,
+                            ),
+                            // scrollDirection: Axis.horizontal,
                             physics: const NeverScrollableScrollPhysics(),
                             itemCount: 4,
                             itemBuilder: (BuildContext context, int index) {

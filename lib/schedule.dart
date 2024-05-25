@@ -133,7 +133,7 @@ class _ScheduleAppState extends State<ScheduleApp> {
                           borderRadius: BorderRadius.circular(8.0),
                         ),
                         child: Text(
-                            '農地 ${index + 1} : ${defCrops[schedule[curindex * 4 + index].index].displayName}',
+                            '區域 ${index + 1} : ${defCrops[schedule[curindex * 4 + index].index].displayName}',
                             style:
                                 TextStyle(fontSize: 32, color: Colors.black)),
                       ),
@@ -197,7 +197,7 @@ class _ScheduleAppState extends State<ScheduleApp> {
                                                 .showSnackBar(SnackBar(
                                               content: Text(i == 0
                                                   ? '已移除規劃'
-                                                  : '已規劃於 ${date.year} 年 ${date.month} 月種植 ${defCrops[i].displayName}}'),
+                                                  : '已規劃於 ${date.year} 年 ${date.month} 月種植 ${defCrops[i].displayName}'),
                                             ));
                                             Navigator.of(context).pop();
                                           } else {
