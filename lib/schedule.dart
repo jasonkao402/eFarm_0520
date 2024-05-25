@@ -1,6 +1,4 @@
-// import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-// import 'package:flutter/widgets.dart';
 import 'dart:math';
 
 class ScheduleApp extends StatefulWidget {
@@ -12,6 +10,7 @@ class ScheduleApp extends StatefulWidget {
 
 enum CropEnum {
   empty,
+  millet,
   corn,
   wheat,
   rice,
@@ -20,6 +19,7 @@ enum CropEnum {
   potato,
   radish,
   cabbage,
+  sorghum,
 }
 
 class CropType {
@@ -34,44 +34,38 @@ class CropType {
 class _ScheduleAppState extends State<ScheduleApp> {
   final List<CropType> defCrops = [
     CropType('empty', '空地', 1, Colors.grey),
-    CropType('corn', '玉米', 4, Colors.yellow),
-    CropType('wheat', '小麥', 4, Colors.amber),
-    CropType('rice', '稻米', 4, Colors.brown.shade400),
+    CropType('millet', '小米', 6, Colors.amber.shade200),
+    CropType('corn', '玉米', 6, Colors.yellow),
+    CropType('wheat', '小麥', 6, Colors.amber),
+    CropType('rice', '稻米', 6, Colors.amber.shade100),
     CropType('bean', '豆子', 3, Colors.green),
     CropType('carrot', '胡蘿蔔', 2, Colors.orange),
-    CropType('potato', '馬鈴薯', 3, Colors.purple),
+    CropType('potato', '馬鈴薯', 3, Colors.brown),
     CropType('radish', '甜菜根', 2, Colors.red),
     CropType('cabbage', '高麗菜', 3, Colors.green.shade200),
+    CropType('sorghum', '高粱', 4, Colors.red.shade200),
   ];
   List<CropEnum> grid = List.generate(4, (_) => CropEnum.empty);
   List<CropEnum> schedule = List.filled(200, CropEnum.empty, growable: true);
-  // ScrollController controller = ScrollController();
   int curindex = 0;
 
   @override
   void initState() {
     super.initState();
-    // controller.addListener(scrollListener);
     for (int i = 0; i < 200; i++) {
       schedule[i] = CropEnum.empty;
     }
-    // plant(0, 0, CropEnum.wheat);
     for (int i = 0; i < 4; i++) {
       plant(i, 0, CropEnum.values[Random().nextInt(4) + 1]);
-      plant(
-          i, Random().nextInt(4) + 5, CropEnum.values[Random().nextInt(8) + 1]);
+      plant(i, Random().nextInt(5) + 6,
+          CropEnum.values[Random().nextInt(defCrops.length - 1) + 1]);
+      plant(i, Random().nextInt(5) + 12,
+          CropEnum.values[Random().nextInt(defCrops.length - 1) + 1]);
     }
   }
 
-  // void scrollListener() {
-  //   setState(() {
-  //     index = (controller.offset/69.0).round() + 1;
-  //   });
-  // }
-
   @override
   void dispose() {
-    // controller.dispose();
     super.dispose();
   }
 
@@ -102,7 +96,7 @@ class _ScheduleAppState extends State<ScheduleApp> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Expanded(
-            flex: 2,
+            flex: 12,
             child: FittedBox(
               child: SizedBox(
                 width: 800,
@@ -145,8 +139,9 @@ class _ScheduleAppState extends State<ScheduleApp> {
               ),
             ),
           ),
+          Expanded(flex: 1, child: Container()),
           Expanded(
-            flex: 1,
+            flex: 8,
             child: GridView.builder(
               // controller: controller,
               shrinkWrap: true,

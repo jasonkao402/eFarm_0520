@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'stats.dart';
 import 'schedule.dart';
+import 'radar.dart';
 
 void main() {
   runApp(const MainApp());
@@ -29,7 +30,7 @@ class funcPage {
   final String title;
   final Widget page;
   final BottomNavigationBarItem item;
-  funcPage(this.title, this.page, this.item);
+  funcPage(this.title, this.item, this.page);
 }
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -40,11 +41,11 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final List<funcPage> pages = [
-    funcPage('Stats', RandomNumberPlotScreen(), BottomNavigationBarItem(icon: Icon(Icons.calculate), label: 'Stats')),
-    funcPage('Schedule', ScheduleApp(), BottomNavigationBarItem(icon: Icon(Icons.schedule), label: 'Schedule')),
-    funcPage('Radar', Text('Radar'), BottomNavigationBarItem(icon: Icon(Icons.radar), label: 'Radar')),
+    funcPage('Stats',    BottomNavigationBarItem(icon: Icon(Icons.calculate), label: 'Stats'),   StatsScreen()),
+    funcPage('Schedule', BottomNavigationBarItem(icon: Icon(Icons.schedule), label: 'Schedule'), ScheduleApp()),
+    funcPage('Radar',    BottomNavigationBarItem(icon: Icon(Icons.radar), label: 'Radar'),       RadarScreen()),
   ];
-  int _currentIndex = 1;
+  int _currentIndex = 0;
   List<Widget> _screens = List.empty(growable: true);
 
   @override

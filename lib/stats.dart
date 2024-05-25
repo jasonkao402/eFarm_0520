@@ -3,8 +3,125 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:fast_noise/fast_noise.dart';
+import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
-import 'dart:math';
+import 'util.dart';
+
+class StatsScreen extends StatelessWidget {
+  const StatsScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    List<List<Text>> weatherReport = genRandWeatherReport();
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('作物種植排程'),
+        actions: [
+          TextButton(
+            child: Text('AI 建議'),
+            onPressed: () {
+              showDialog(
+                context: context,
+                builder: (context) {
+                  return AlertDialog(
+                    title: const Text('AI 建議'),
+                    content: const Text(
+                      '根據天氣預報，山區日間有強烈日曬，須注意午後雷陣雨。\n\n根莖類作物注意排水以及水土保持，葉菜類作物建議架設遮陽棚。',
+                    ),
+                    actions: [
+                      TextButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        child: const Text('關閉'),
+                      ),
+                    ],
+                  );
+                },
+              );
+            },
+          ),
+        ],
+      ),
+      body: Padding(
+        padding: EdgeInsets.all(8.0),
+        child: CustomScrollView(
+          slivers: <Widget>[
+            SliverToBoxAdapter(
+              child: Container(
+                margin: EdgeInsets.symmetric(vertical: 4),
+                padding: EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.grey, width: 2.0),
+                  borderRadius: BorderRadius.circular(16.0),
+                ),
+                child: Text(
+                  '名稱 : 阿傑的蔬菜田\n'
+                  '地點 : 高雄市鼓山區\n'
+                  '時間 : ${DateFormat('yyyy/MM/dd kk:mm').format(DateTime.now())}\n'
+                  '更新頻率 : 1 分鐘',
+                  style: TextStyle(fontSize: 16),
+                ),
+              ),
+            ),
+            SliverToBoxAdapter(
+              child: Container(
+                padding: EdgeInsets.all(8),
+                margin: EdgeInsets.symmetric(vertical: 4),
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.grey, width: 2.0),
+                  borderRadius: BorderRadius.circular(16.0),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: Column(
+                        // mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          Text(
+                            '天氣預報\n'
+                            '日出 : 05:23 | 日落 : 18:13',
+                            style: TextStyle(fontSize: 18),
+                          ),
+                          FittedBox(
+                            alignment: Alignment.center,
+                            child: Row(
+                              // mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                for (var item in weatherReport)
+                                  Container(
+                                    padding: EdgeInsets.all(4),
+                                    margin: EdgeInsets.all(2),
+                                    decoration: BoxDecoration(
+                                      color: Colors.grey[850],
+                                      borderRadius: BorderRadius.circular(8.0),
+                                    ),
+                                    child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: item,
+                                    ),
+                                  ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    )
+                  ],
+                ),
+              ),
+            ),
+            RandomNumberPlotScreen(),
+          ],
+        ),
+      ),
+    );
+  }
+}
 
 class RandomNumberPlotScreen extends StatefulWidget {
   const RandomNumberPlotScreen({super.key});
@@ -14,7 +131,7 @@ class RandomNumberPlotScreen extends StatefulWidget {
 }
 
 class RandData {
-  static const int _maxNumbers = 45;
+  static const int _maxNumbers = 60;
   final String title, unit;
   final double mean, stdDev;
   final PerlinFractalNoise _rng;
@@ -23,7 +140,7 @@ class RandData {
 
   List<double> get numbers => List.unmodifiable(_numbers);
   double get latest => _numbers.last;
-  double x = 0, frequency = 0.002;
+  double x = 0, frequency = 0.005;
 
   void init() {
     _numbers.clear();
@@ -55,8 +172,8 @@ class _RandomNumberPlotScreenState extends State<RandomNumberPlotScreen> {
         '溫度',
         '°C',
         Colors.red,
-        23,
-        8,
+        21,
+        5,
         PerlinFractalNoise(
             seed: DateTime.now().millisecond, frequency: 1, octaves: 5)),
     RandData(
@@ -80,11 +197,10 @@ class _RandomNumberPlotScreenState extends State<RandomNumberPlotScreen> {
         'ppm',
         Colors.green,
         50,
-        10,
+        6,
         PerlinFractalNoise(
-            seed: DateTime.now().millisecond * 4, frequency: 0.25, octaves: 6)),
+            seed: DateTime.now().millisecond * 5, frequency: 1, octaves: 2)),
   ];
-  List<List<Text>> weatherReport = [];
 
   @override
   void initState() {
@@ -92,7 +208,7 @@ class _RandomNumberPlotScreenState extends State<RandomNumberPlotScreen> {
     for (var data in randData) {
       data.init();
     }
-    weatherReport = genRandWeatherReport(7);
+    // weatherReport = genRandWeatherReport();
     timer = Timer.periodic(Duration(seconds: updatePeriod), (timer) {
       setState(() {
         for (var data in randData) {
@@ -102,58 +218,33 @@ class _RandomNumberPlotScreenState extends State<RandomNumberPlotScreen> {
     });
   }
 
-  List<List<Text>> genRandWeatherReport(int numDays) {
-    List<List<Text>> report = [];
-    DateTime now = DateTime.now();
-    const List<String> defaultWeather = [
-      '☀️',
-      '🌤️',
-      '⛅',
-      '🌥️',
-      '🌦️',
-      '☁️',
-      '🌧️',
-      '⛈️',
-      '🌩️'
-    ];
-
-    for (int i = 0; i < numDays; i++) {
-      report.add([
-        Text('${now.month}/${now.day}'),
-        Text(defaultWeather[Random().nextInt(defaultWeather.length)],
-            style: TextStyle(fontSize: 24.0)),
-        Text('${21 + Random().nextInt(6)}°C'),
-      ]);
-      now = now.add(Duration(days: 1));
-    }
-    return report;
-  }
-
   List<Widget> buildStatChart() {
     return randData
         .map(
-          (stats) => Container(
-            margin: EdgeInsets.all(8),
-            padding: EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: Colors.grey[850],
-              borderRadius: BorderRadius.circular(16.0),
-              // border: Border.all(color: stats.color),
-            ),
-            child: ListTile(
+          (stats) => Scaffold(
+              appBar: AppBar(
                 title: Row(
-                  mainAxisSize: MainAxisSize.min,
                   children: [
                     Icon(Icons.circle, color: stats.color),
                     Text(
-                        ' ${stats.title} : ${stats.latest.toStringAsFixed(2)} ${stats.unit}',
+                        ' ${stats.title} : ${stats.latest.toStringAsFixed(3)} ${stats.unit}',
                         style: TextStyle(fontSize: 16)),
                   ],
                 ),
-                subtitle: Container(
-                  padding: EdgeInsets.symmetric(vertical: 32.0),
+              ),
+              body: Container(
+                height: 300,
+                decoration: BoxDecoration(
+                  color: Colors.grey[850],
+                  borderRadius: BorderRadius.circular(16.0),
+                ),
+                // child: FittedBox(
+                //   fit: BoxFit.scaleDown,
                   child: LineChart(
                     LineChartData(
+                      minY: stats.mean - stats.stdDev * 1,
+                      maxY: stats.mean + stats.stdDev * 1,
+                      baselineY: stats.mean,
                       lineBarsData: [
                         LineChartBarData(
                           spots: stats.numbers
@@ -180,114 +271,30 @@ class _RandomNumberPlotScreenState extends State<RandomNumberPlotScreen> {
                     ),
                     duration: const Duration(),
                   ),
-                )),
-          ),
+                ),
+              )
+              // child: Column(
+              //   children: [
+              //     Container(
+              //       margin: EdgeInsets.all(16.0),
+              //       child:
+              //     ),
+              //   ],
+              // ),
+              // ),
         )
         .toList();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: CustomScrollView(
-          slivers: <Widget>[
-            SliverAppBar(
-              title: Text('田地即時感測數據'),
-              actions: [
-                TextButton(
-                    onPressed: () {
-                      showDialog(
-                          context: context,
-                          builder: (context) {
-                            return AlertDialog(
-                              title: Text('AI 建議'),
-                              content: Text(
-                                // 'AI 分析 : \n溫度適中，濕度適中，光照適中，肥沃度適中\n'
-                                '根據天氣預報，山區日間有強烈日曬，須注意午後雷陣雨。\n\n根莖類作物注意排水以及水土保持，葉菜類作物建議架設遮陽棚。',
-                              ),
-                              actions: [
-                                TextButton(
-                                  onPressed: () {
-                                    Navigator.of(context).pop();
-                                  },
-                                  child: Text('關閉'),
-                                ),
-                              ],
-                            );
-                          });
-                    },
-                    child: Text('AI 建議')),
-              ],
-            ),
-            SliverToBoxAdapter(
-              child: Text(
-                '名稱 : 阿傑的蔬菜田\n'
-                '地點 : 高雄市鼓山區\n'
-                '時間 : ${DateFormat('yyyy/MM/dd kk:mm').format(DateTime.now())}\n'
-                '更新頻率 : 1 分鐘',
-                style: TextStyle(fontSize: 16),
-              ),
-            ),
-            SliverToBoxAdapter(
-              child: Container(
-                padding: EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.grey, width: 2.0),
-                  borderRadius: BorderRadius.circular(16.0),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Expanded(
-                      child: Column(
-                        // mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          Text('天氣預報\n'
-                          '日出 : 05:23 | 日落 : 18:13'),
-                          FittedBox(
-                            alignment: Alignment.center,
-                            child: Row(
-                              // mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                for (var item in weatherReport)
-                                  Container(
-                                    padding: EdgeInsets.all(4),
-                                    margin: EdgeInsets.all(2),
-                                    decoration: BoxDecoration(
-                                      color: Colors.grey[850],
-                                      borderRadius: BorderRadius.circular(8.0),
-                                    ),
-                                    child: Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: item,
-                                    ),
-                                  ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    )
-                  ],
-                ),
-              ),
-            ),
-            SliverGrid(
-              delegate: SliverChildListDelegate(buildStatChart()),
-              gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-                maxCrossAxisExtent: 600.0,
-                mainAxisSpacing: 8.0,
-                crossAxisSpacing: 8.0,
-                childAspectRatio: 4 / 3,
-              ),
-            ),
-          ],
-        ),
+    return SliverGrid(
+      delegate: SliverChildListDelegate(buildStatChart()),
+      gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+        maxCrossAxisExtent: 600.0,
+        mainAxisSpacing: 4,
+        crossAxisSpacing: 4,
+        childAspectRatio: 4 / 3,
       ),
     );
   }
