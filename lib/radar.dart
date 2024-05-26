@@ -1,117 +1,131 @@
+// main.dart
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'dart:async';
 import 'dart:math';
 
-class RadarScreen extends StatefulWidget {
-  const RadarScreen({super.key});
+class BouncingBallScreen extends StatefulWidget {
+  const BouncingBallScreen({super.key});
 
   @override
-  State<RadarScreen> createState() => _RadarScreenState();
+   State<BouncingBallScreen> createState() => _BouncingBallScreenState();
 }
 
-class RadarProvider extends ChangeNotifier {
-  final List<Offset> points = [];
-  double radarAngle = 0;
+class _BouncingBallScreenState extends State<BouncingBallScreen> {
+  double _ballX = 20.0;
+  double _ballY = 20.0;
+  double _velocityX = 10.0;
+  double _velocityY = 5.0;
+  double _angle = 0.0;
 
-  RadarProvider() {
-    _generateRandomPoints();
-  }
-
-  void _generateRandomPoints() {
-    final random = Random();
-    for (int i = 0; i < 20; i++) {
-      double x = random.nextDouble() * 300 - 150;
-      double y = random.nextDouble() * 300 - 150;
-      points.add(Offset(x, y));
-    }
-    notifyListeners();
-  }
-
-  void updateRadarAngle(double delta) {
-    radarAngle = (radarAngle + delta) % 360;
-    notifyListeners();
-  }
-}
-
-class _RadarScreenState extends State<RadarScreen> with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
+  final double _csize = 400;
+  final double _ballRadius = 10.0, gravity = 0.3, damping = 0.99, angspeed = 0.05;
+  late Timer _timer;
 
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(
-      duration: const Duration(seconds: 10),
-      vsync: this,
-    )..addListener(() {
-        context.read<RadarProvider>().updateRadarAngle(1);
-      });
-    _controller.repeat();
+    _timer = Timer.periodic(Duration(milliseconds: 30), _updateBallPosition);
+    // Timer.periodic(duration, (timer) { })
   }
 
   @override
   void dispose() {
-    _controller.dispose();
+    _timer.cancel();
     super.dispose();
+  }
+
+  void _updateBallPosition(Timer timer) {
+    setState(() {
+      if (_ballX + _ballRadius > _csize || _ballX - _ballRadius < 0) {
+        _ballX -= _velocityX;
+        _velocityX *= -damping;
+      }
+      if (_ballY + _ballRadius > _csize || _ballY - _ballRadius < 0) {
+        _ballY -= _velocityY;
+        _velocityY *= -damping;
+      }
+      _ballX += _velocityX;
+      _ballY += _velocityY;
+      // _velocityY += gravity;
+      _angle = (_angle + angspeed) % (2 * pi);
+      // print('$_angle, ${atan2(_ballY-_csize/2, _ballX-_csize/2)}');
+
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Radar Simulation'),
-      ),
       body: Center(
-        child: CustomPaint(
-          size: Size(300, 300),
-          painter: RadarPainter(),
+        child: SizedBox(
+          width: _csize,
+          height: _csize,
+          child: CustomPaint(
+            foregroundPainter: SweepScannerPainter(_angle),
+            painter: BallPainter(_ballX, _ballY, _ballRadius, _angle),
+            size: Size(_csize, _csize),
+            // child: Container(),
+          ),
         ),
       ),
     );
   }
 }
 
-class RadarPainter extends CustomPainter {
+class BallPainter extends CustomPainter {
+  final double ballX;
+  final double ballY;
+  final double ballRadius;
+  final double angle;
+
+  BallPainter(this.ballX, this.ballY, this.ballRadius, this.angle);
+
   @override
   void paint(Canvas canvas, Size size) {
-    final radarProvider = Provider.of<RadarProvider>(canvas as BuildContext, listen: false);
+    double diff = (atan2(ballY - size.height / 2, ballX - size.width / 2) - angle).abs();
+    diff = min(2 * pi - diff, diff);
     final paint = Paint()
-      ..color = Colors.green
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 2;
-
-    final center = Offset(size.width / 2, size.height / 2);
-
-    // Draw radar background
-    canvas.drawCircle(center, size.width / 2, paint);
-
-    // Draw points
-    for (var point in radarProvider.points) {
-      final pointPaint = Paint()
-        ..color = Colors.red
-        ..style = PaintingStyle.fill;
-      canvas.drawCircle(center + point, 4, pointPaint);
-    }
-
-    // Draw radar sweep
-    final radarSweepPaint = Paint()
-      ..color = Colors.green.withOpacity(0.5)
+      ..color = diff < 0.2 ? Colors.red : Colors.blue
       ..style = PaintingStyle.fill;
 
-    final radarAngle = radarProvider.radarAngle;
-    final sweepPath = Path()
-      ..moveTo(center.dx, center.dy)
-      ..arcTo(
-        Rect.fromCircle(center: center, radius: size.width / 2),
-        radians(radarAngle - 25),
-        radians(50),
-        false,
-      )
-      ..close();
-    canvas.drawPath(sweepPath, radarSweepPaint);
+    final backgroundPaint = Paint()
+      ..color = Colors.white
+      ..style = PaintingStyle.stroke;
+
+    // Draw the background
+    canvas.drawRect(Rect.fromLTWH(0, 0, size.width, size.height), backgroundPaint);
+
+    // Draw the ball
+    canvas.drawCircle(Offset(ballX, ballY), ballRadius, paint);
   }
 
-  double radians(double degrees) {
-    return degrees * pi / 180;
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) {
+    return false;
+  }
+}
+
+class SweepScannerPainter extends CustomPainter {
+  final double angle;
+
+  SweepScannerPainter(this.angle);
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = Colors.green
+      ..strokeWidth = 5.0;
+
+    final center = Offset(size.width / 2, size.height / 2);
+    final radius = min(size.width / 2, size.height / 2)*2;
+
+    final endPoint = Offset(
+      center.dx + radius * cos(angle),
+      center.dy + radius * sin(angle),
+    );
+
+    // canvas.drawRect(Rect.fromLTWH(0, 0, size.width, size.height), Paint()..color = Colors.black);
+    canvas.drawLine(center, endPoint, paint);
   }
 
   @override

@@ -66,6 +66,7 @@ class StatsScreen extends StatelessWidget {
             ),
             SliverToBoxAdapter(
               child: Container(
+                height: 400,
                 margin: EdgeInsets.symmetric(vertical: 4),
                 padding: EdgeInsets.all(8),
                 decoration: BoxDecoration(
@@ -73,26 +74,30 @@ class StatsScreen extends StatelessWidget {
                   borderRadius: BorderRadius.circular(16.0),
                 ),
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  // mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Expanded(
                       flex: 2,
-                      child: Text(
-                        // '名稱 : \n阿傑的蔬菜田\n'
-                        '地點 : \n高雄市鼓山區\n'
-                        '時間 : \n${DateFormat('yyyy/MM/dd kk:mm:ss').format(DateTime.now())}\n'
-                        '更新頻率 : \n1 分鐘',
-                        style: TextStyle(fontSize: 16),
+                      child: FittedBox(
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          // '名稱 : \n阿傑的蔬菜田\n'
+                          '地點 : \n高雄市鼓山區\n'
+                          '時間 : \n${DateFormat('yyyy/MM/dd kk:mm:ss').format(DateTime.now())}\n'
+                          '更新頻率 : \n1 分鐘',
+                          style: TextStyle(fontSize: 16),
+                        ),
                       ),
                     ),
                     // Expanded(flex: 1, child: Text('')),
                     Expanded(
                       flex: 3,
                       child: FittedBox(
+                        alignment: Alignment.centerRight,
                         child: SizedBox(
                           // height: 200,
-                          width: 400,
+                          width: 300,
                           child: GridView.builder(
                             shrinkWrap: true,
                             gridDelegate:
