@@ -1,6 +1,6 @@
 # e_farming
 
-https://github.com/jasonkao402/eFarm_0520/edit/master/web
+https://jasonkao402.github.io/eFarm_0520/release/web/index.html
 
 ## e 帆豐順
 > e化農業，年年豐收

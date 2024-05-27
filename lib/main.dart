@@ -45,7 +45,7 @@ class _HomeScreenState extends State<HomeScreen> {
     funcPage('Schedule', BottomNavigationBarItem(icon: Icon(Icons.schedule), label: 'Schedule'), ScheduleScreen()),
     funcPage('Radar',    BottomNavigationBarItem(icon: Icon(Icons.radar), label: 'Radar'),       ScanningScreen()),
   ];
-  int _currentIndex = 2;
+  int _currentIndex = 0;
   List<Widget> _screens = List.empty(growable: true);
 
   @override
