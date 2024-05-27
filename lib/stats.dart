@@ -1,17 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'randomPlot.dart';
-import 'schedule.dart';
 import 'util.dart';
 
 class StatsScreen extends StatelessWidget {
   const StatsScreen({super.key});
 
-  static List<CropEnum> schedule = [
+  static final List<CropEnum> _schedule = [
     CropEnum.millet,
     CropEnum.corn,
     CropEnum.wheat,
     CropEnum.rice,
+  ];
+  static final List<CropWarningItem> _warning = [
+    CropWarningItem(CropEnum.corn, '偵測到來自午後雷陣雨的大量降雨，玉米須避免積水，建議檢查排水系統是否正常運作。'),
+    CropWarningItem(
+        CropEnum.rice, '現在為夏季，夏季高溫高濕易爆發稻瘟病、稻飛虱等病蟲害。定期檢查田間，及時施用對症的農藥。'),
+    CropWarningItem(CropEnum.empty, '距離上次施肥過久，建議施用適量的有機肥料，以維持土壤肥力。'),
   ];
 
   @override
@@ -20,32 +25,32 @@ class StatsScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text('作物種植排程'),
-        actions: [
-          TextButton(
-            child: Text('AI 建議'),
-            onPressed: () {
-              showDialog(
-                context: context,
-                builder: (context) {
-                  return AlertDialog(
-                    title: const Text('AI 建議'),
-                    content: const Text(
-                      '根據天氣預報，山區日間有強烈日曬，須注意午後雷陣雨。\n\n根莖類作物注意排水以及水土保持，葉菜類作物建議架設遮陽棚。',
-                    ),
-                    actions: [
-                      TextButton(
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                        },
-                        child: const Text('關閉'),
-                      ),
-                    ],
-                  );
-                },
-              );
-            },
-          ),
-        ],
+        // actions: [
+        //   TextButton(
+        //     child: Text('AI 建議'),
+        //     onPressed: () {
+        //       showDialog(
+        //         context: context,
+        //         builder: (context) {
+        //           return AlertDialog(
+        //             title: const Text('AI 建議'),
+        //             content: const Text(
+        //               '根據天氣預報，山區日間有強烈日曬，須注意午後雷陣雨。\n\n根莖類作物注意排水以及水土保持，葉菜類作物建議架設遮陽棚。',
+        //             ),
+        //             actions: [
+        //               TextButton(
+        //                 onPressed: () {
+        //                   Navigator.of(context).pop();
+        //                 },
+        //                 child: const Text('關閉'),
+        //               ),
+        //             ],
+        //           );
+        //         },
+        //       );
+        //     },
+        //   ),
+        // ],
       ),
       body: Padding(
         padding: EdgeInsets.all(8.0),
@@ -86,7 +91,8 @@ class StatsScreen extends StatelessWidget {
                           // '名稱 : \n阿傑的蔬菜田\n'
                           '地點 : \n高雄市鼓山區\n'
                           '時間 : \n${DateFormat('yyyy/MM/dd kk:mm:ss').format(DateTime.now())}\n'
-                          '更新頻率 : \n1 分鐘',
+                          '資料更新頻率 : \n1 分鐘\n'
+                          '資料來源 : \n鼓山氣象站\n高雄燈塔氣象站\n',
                           style: TextStyle(fontSize: 16),
                         ),
                       ),
@@ -114,9 +120,9 @@ class StatsScreen extends StatelessWidget {
                             itemBuilder: (BuildContext context, int index) {
                               return Container(
                                 decoration: BoxDecoration(
-                                  color: schedule[index] == CropEnum.empty
+                                  color: _schedule[index] == CropEnum.empty
                                       ? Colors.grey
-                                      : defCrops[schedule[index].index].color,
+                                      : defCrops[_schedule[index].index].color,
                                   borderRadius: BorderRadius.circular(20.0),
                                 ),
                                 alignment: Alignment.center,
@@ -126,7 +132,7 @@ class StatsScreen extends StatelessWidget {
                                     borderRadius: BorderRadius.circular(8.0),
                                   ),
                                   child: Text(
-                                      '區域 ${index + 1} : ${defCrops[schedule[index].index].displayName}',
+                                      '區域 ${index + 1} : ${defCrops[_schedule[index].index].displayName}',
                                       style: TextStyle(
                                           fontSize: 24, color: Colors.black)),
                                 ),
@@ -140,6 +146,25 @@ class StatsScreen extends StatelessWidget {
                 ),
               ),
             ),
+            SliverList.builder(
+              itemCount: _warning.length,
+              itemBuilder: (context, index) {
+                return Container(
+                  padding: EdgeInsets.all(8),
+                  margin: EdgeInsets.symmetric(vertical: 4),
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.grey, width: 2.0),
+                    borderRadius: BorderRadius.circular(16.0),
+                  ),
+                  child: _warning[index]
+                  // Column(
+                  //   crossAxisAlignment: CrossAxisAlignment.start,
+                  //   children: _warning,
+                  // ),
+                );
+              },
+            ),
+
             SliverToBoxAdapter(
               child: Container(
                 padding: EdgeInsets.all(8),
@@ -191,6 +216,7 @@ class StatsScreen extends StatelessWidget {
                 ),
               ),
             ),
+            
             RandomNumberPlotScreen(),
           ],
         ),

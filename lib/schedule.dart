@@ -9,29 +9,6 @@ class ScheduleScreen extends StatefulWidget {
   State<ScheduleScreen> createState() => _ScheduleScreenState();
 }
 
-class CropType {
-  String idName;
-  String displayName;
-  int growTime;
-  Color color;
-
-  CropType(this.idName, this.displayName, this.growTime, this.color);
-}
-
-final List<CropType> defCrops = [
-  CropType('empty', '空地', 1, Colors.grey),
-  CropType('millet', '小米', 6, Colors.amber.shade200),
-  CropType('corn', '玉米', 6, Colors.yellow),
-  CropType('wheat', '小麥', 6, Colors.amber),
-  CropType('rice', '稻米', 6, Colors.amber.shade100),
-  CropType('bean', '豆子', 3, Colors.green),
-  CropType('carrot', '胡蘿蔔', 2, Colors.orange),
-  CropType('potato', '樹薯', 3, Colors.brown),
-  CropType('radish', '甜菜根', 2, Colors.red),
-  CropType('cabbage', '高麗菜', 3, Colors.green.shade200),
-  CropType('sorghum', '高粱', 4, Colors.red.shade200),
-];
-
 class _ScheduleScreenState extends State<ScheduleScreen> {
   List<CropEnum> grid = List.generate(4, (_) => CropEnum.empty);
   List<CropEnum> schedule = List.filled(200, CropEnum.empty, growable: true);
@@ -94,7 +71,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('作物種植排程 ${topdate.year} 年 ${topdate.month} 月'),
+        title: Text('作物種植排程 : ${topdate.year} 年 ${topdate.month} 月'),
       ),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -184,55 +161,58 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                           context: context,
                           builder: (context) {
                             return AlertDialog(
+                              scrollable: true,
                               title: Text(
                                   '選擇作物 - 區域 : ${index % 4 + 1} - ${date.year} 年 ${date.month} 月'),
-                              content: Column(
+                              content: 
+                              Column(
                                 children: [
                                   for (int i = 0; i < defCrops.length; i++)
-                                    TextButton(
-                                        onPressed: () {
-                                          if (checkPlant(index % 4, index ~/ 4,
-                                              CropEnum.values[i])) {
-                                            setPlant(index % 4, index ~/ 4,
-                                                CropEnum.values[i]);
-
-                                            ScaffoldMessenger.of(context)
-                                                .showSnackBar(SnackBar(
-                                              content: Text(i == 0
-                                                  ? '已移除規劃'
-                                                  : '已規劃於 ${date.year} 年 ${date.month} 月種植 ${defCrops[i].displayName}'),
-                                            ));
-                                            Navigator.of(context).pop();
-                                          } else {
-                                            showDialog(
-                                              context: context,
-                                              builder: (context) {
-                                                return AlertDialog(
-                                                  title: Text('無法種植'),
-                                                  content: Text('該地已經有作物種植了'),
-                                                  actions: [
-                                                    TextButton(
-                                                      onPressed: () {
-                                                        Navigator.of(context)
-                                                            .pop();
-                                                      },
-                                                      child: Text('確定'),
-                                                    ),
-                                                  ],
-                                                );
-                                              },
-                                            );
-                                          }
-                                        },
-                                        child: Row(
-                                          children: [
-                                            Icon(Icons.circle,
-                                                color: defCrops[i].color,
-                                                size: 20),
-                                            Text(
-                                                '${defCrops[i].displayName} (成長時間 : ${defCrops[i].growTime} 個月)'),
-                                          ],
-                                        )),
+                                    ListTile(
+                                      onTap: () {
+                                        if (checkPlant(index % 4, index ~/ 4,
+                                            CropEnum.values[i])) {
+                                          
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(SnackBar(
+                                            content: Text(i == 0
+                                                ? '已移除 ${defCrops[schedule[index].index].displayName}'
+                                                : '已規劃於 ${date.year} 年 ${date.month} 月種植 ${defCrops[i].displayName}'),
+                                          ));
+                                          setPlant(index % 4, index ~/ 4,
+                                              CropEnum.values[i]);
+                                          Navigator.of(context).pop();
+                                        } else {
+                                          showDialog(
+                                            context: context,
+                                            builder: (context) {
+                                              return AlertDialog(
+                                                title: Text('無法種植'),
+                                                content: Text('該地已經有作物種植了'),
+                                                actions: [
+                                                  TextButton(
+                                                    onPressed: () {
+                                                      Navigator.of(context)
+                                                          .pop();
+                                                    },
+                                                    child: Text('確定'),
+                                                  ),
+                                                ],
+                                              );
+                                            },
+                                          );
+                                        }
+                                      },
+                                      leading: Icon(Icons.circle,
+                                          color: defCrops[i].color, size: 32),
+                                      title: Text(i == 0
+                                          ? '移除規劃'
+                                          : '種植 ${defCrops[i].displayName} (成長時間 : ${defCrops[i].growTime} 個月'),
+                                      subtitle: i == 0
+                                          ? null
+                                          : Text(
+                                              '產季：${defCrops[i].startMonth} ~ ${defCrops[i].endMonth}'),
+                                    ),
                                 ],
                               ),
                             );
@@ -244,11 +224,13 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                               color: Colors.white,
                               borderRadius: BorderRadius.circular(2.0),
                             ),
-                            child: Text('${date.year}/${date.month}',
-                                style: TextStyle(
-                                    fontSize: 9, color: Colors.black),softWrap: false,
-                                    ),
-                                    )
+                            child: Text(
+                              '${date.year}/${date.month}',
+                              style:
+                                  TextStyle(fontSize: 9, color: Colors.black),
+                              softWrap: false,
+                            ),
+                          )
                         : Container(),
                   ),
                 );

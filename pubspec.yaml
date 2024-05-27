@@ -19,6 +19,13 @@ dependencies:
   intl: ^0.18.1
   auto_size_text: ^3.0.0
 
+flutter_launcher_icons:
+  android: "launcher_icon"
+  ios: false
+  image_path: "assets/eFarm.png"
+  web:
+    generate: true
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
