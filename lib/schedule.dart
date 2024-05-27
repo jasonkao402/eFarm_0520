@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'dart:math';
 import 'util.dart';
 
-class ScheduleApp extends StatefulWidget {
-  const ScheduleApp({super.key});
+class ScheduleScreen extends StatefulWidget {
+  const ScheduleScreen({super.key});
 
   @override
-  State<ScheduleApp> createState() => _ScheduleAppState();
+  State<ScheduleScreen> createState() => _ScheduleScreenState();
 }
 
 class CropType {
@@ -32,7 +32,7 @@ final List<CropType> defCrops = [
   CropType('sorghum', '高粱', 4, Colors.red.shade200),
 ];
 
-class _ScheduleAppState extends State<ScheduleApp> {
+class _ScheduleScreenState extends State<ScheduleScreen> {
   List<CropEnum> grid = List.generate(4, (_) => CropEnum.empty);
   List<CropEnum> schedule = List.filled(200, CropEnum.empty, growable: true);
   int curindex = 0;
@@ -169,6 +169,9 @@ class _ScheduleAppState extends State<ScheduleApp> {
                     ),
                   ),
                   child: TextButton(
+                    style: ButtonStyle(
+                      padding: MaterialStateProperty.all(EdgeInsets.zero),
+                    ),
                     onPressed: () {
                       setState(() {
                         curindex = index ~/ 4;
@@ -236,14 +239,16 @@ class _ScheduleAppState extends State<ScheduleApp> {
                           });
                     },
                     child: index % 4 == 0
-                        ? DecoratedBox(
+                        ? Container(
                             decoration: BoxDecoration(
                               color: Colors.white,
-                              borderRadius: BorderRadius.circular(4.0),
+                              borderRadius: BorderRadius.circular(2.0),
                             ),
                             child: Text('${date.year}/${date.month}',
                                 style: TextStyle(
-                                    fontSize: 10, color: Colors.black)))
+                                    fontSize: 9, color: Colors.black),softWrap: false,
+                                    ),
+                                    )
                         : Container(),
                   ),
                 );

@@ -2,7 +2,7 @@
 import 'package:flutter/material.dart';
 import 'stats.dart';
 import 'schedule.dart';
-import 'radar.dart';
+import 'scanning.dart';
 
 void main() {
   runApp(const MainApp());
@@ -42,8 +42,8 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   final List<funcPage> pages = [
     funcPage('Stats',    BottomNavigationBarItem(icon: Icon(Icons.calculate), label: 'Stats'),   StatsScreen()),
-    funcPage('Schedule', BottomNavigationBarItem(icon: Icon(Icons.schedule), label: 'Schedule'), ScheduleApp()),
-    funcPage('Radar',    BottomNavigationBarItem(icon: Icon(Icons.radar), label: 'Radar'),       BouncingBallScreen()),
+    funcPage('Schedule', BottomNavigationBarItem(icon: Icon(Icons.schedule), label: 'Schedule'), ScheduleScreen()),
+    funcPage('Radar',    BottomNavigationBarItem(icon: Icon(Icons.radar), label: 'Radar'),       ScanningScreen()),
   ];
   int _currentIndex = 2;
   List<Widget> _screens = List.empty(growable: true);

@@ -50,3 +50,37 @@ List<List<Text>> genRandWeatherReport() {
   }
   return report;
 }
+
+class ToggleButton extends StatefulWidget {
+  const ToggleButton({super.key});
+
+  @override
+  State<ToggleButton> createState() => _ToggleButtonState();
+}
+
+class _ToggleButtonState extends State<ToggleButton> {
+  bool _isOn = false;
+
+  void _toggleButton() {
+    setState(() {
+      _isOn = !_isOn;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: ElevatedButton(
+        onPressed: _toggleButton,
+        style: ElevatedButton.styleFrom(
+          backgroundColor:
+              _isOn ? Colors.green : Colors.red, // Set button color
+        ),
+        child: Text(
+          _isOn ? 'ON' : 'OFF',
+          style: TextStyle(fontSize: 20),
+        ),
+      ),
+    );
+  }
+}

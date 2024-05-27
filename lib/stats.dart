@@ -66,7 +66,7 @@ class StatsScreen extends StatelessWidget {
             ),
             SliverToBoxAdapter(
               child: Container(
-                height: 400,
+                // height: 400,
                 margin: EdgeInsets.symmetric(vertical: 4),
                 padding: EdgeInsets.all(8),
                 decoration: BoxDecoration(
@@ -80,6 +80,7 @@ class StatsScreen extends StatelessWidget {
                     Expanded(
                       flex: 2,
                       child: FittedBox(
+                        fit: BoxFit.scaleDown,
                         alignment: Alignment.centerLeft,
                         child: Text(
                           // '名稱 : \n阿傑的蔬菜田\n'
@@ -95,6 +96,7 @@ class StatsScreen extends StatelessWidget {
                       flex: 3,
                       child: FittedBox(
                         alignment: Alignment.centerRight,
+                        fit: BoxFit.scaleDown,
                         child: SizedBox(
                           // height: 200,
                           width: 300,
@@ -111,7 +113,6 @@ class StatsScreen extends StatelessWidget {
                             itemCount: 4,
                             itemBuilder: (BuildContext context, int index) {
                               return Container(
-                                margin: EdgeInsets.all(2),
                                 decoration: BoxDecoration(
                                   color: schedule[index] == CropEnum.empty
                                       ? Colors.grey

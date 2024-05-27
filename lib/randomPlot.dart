@@ -49,7 +49,7 @@ class _RandomNumberPlotScreenState extends State<RandomNumberPlotScreen> {
   static const int updatePeriod = 15;
   final List<RandData> randData = [
     RandData(
-        '溫度',
+        '空氣溫度',
         '°C',
         Colors.red,
         21,
@@ -57,13 +57,30 @@ class _RandomNumberPlotScreenState extends State<RandomNumberPlotScreen> {
         PerlinFractalNoise(
             seed: DateTime.now().millisecond, frequency: 1, octaves: 5)),
     RandData(
-        '濕度',
+        '空氣濕度',
         '%',
-        Colors.blue,
+        Colors.blue.shade300,
         50,
         10,
         PerlinFractalNoise(
-            seed: DateTime.now().millisecond * 2, frequency: 0.5, octaves: 4)),
+            seed: DateTime.now().millisecond * 2, frequency: 0.8, octaves: 4)),
+    RandData(
+      '土壤溫度',
+      '°C',
+      Colors.orange,
+      18,
+      3,
+      PerlinFractalNoise(
+          seed: DateTime.now().second, frequency: 0.6, octaves: 4),
+    ),
+    RandData(
+        '土壤濕度',
+        '%',
+        Colors.blue.shade800,
+        40,
+        5,
+        PerlinFractalNoise(
+            seed: DateTime.now().second * 2, frequency: 0.5, octaves: 3)),
     RandData(
         '光照',
         'lux',
