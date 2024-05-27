@@ -23,35 +23,6 @@ class StatsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     List<List<Text>> weatherReport = genRandWeatherReport();
     return Scaffold(
-      appBar: AppBar(
-        title: Text('作物種植排程'),
-        // actions: [
-        //   TextButton(
-        //     child: Text('AI 建議'),
-        //     onPressed: () {
-        //       showDialog(
-        //         context: context,
-        //         builder: (context) {
-        //           return AlertDialog(
-        //             title: const Text('AI 建議'),
-        //             content: const Text(
-        //               '根據天氣預報，山區日間有強烈日曬，須注意午後雷陣雨。\n\n根莖類作物注意排水以及水土保持，葉菜類作物建議架設遮陽棚。',
-        //             ),
-        //             actions: [
-        //               TextButton(
-        //                 onPressed: () {
-        //                   Navigator.of(context).pop();
-        //                 },
-        //                 child: const Text('關閉'),
-        //               ),
-        //             ],
-        //           );
-        //         },
-        //       );
-        //     },
-        //   ),
-        // ],
-      ),
       body: Padding(
         padding: EdgeInsets.all(8.0),
         child: CustomScrollView(
@@ -150,21 +121,20 @@ class StatsScreen extends StatelessWidget {
               itemCount: _warning.length,
               itemBuilder: (context, index) {
                 return Container(
-                  padding: EdgeInsets.all(8),
-                  margin: EdgeInsets.symmetric(vertical: 4),
-                  decoration: BoxDecoration(
-                    border: Border.all(color: Colors.grey, width: 2.0),
-                    borderRadius: BorderRadius.circular(16.0),
-                  ),
-                  child: _warning[index]
-                  // Column(
-                  //   crossAxisAlignment: CrossAxisAlignment.start,
-                  //   children: _warning,
-                  // ),
-                );
+                    padding: EdgeInsets.all(8),
+                    margin: EdgeInsets.symmetric(vertical: 4),
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.grey, width: 2.0),
+                      borderRadius: BorderRadius.circular(16.0),
+                    ),
+                    child: _warning[index]
+                    // Column(
+                    //   crossAxisAlignment: CrossAxisAlignment.start,
+                    //   children: _warning,
+                    // ),
+                    );
               },
             ),
-
             SliverToBoxAdapter(
               child: Container(
                 padding: EdgeInsets.all(8),
@@ -216,7 +186,6 @@ class StatsScreen extends StatelessWidget {
                 ),
               ),
             ),
-            
             RandomNumberPlotScreen(),
           ],
         ),

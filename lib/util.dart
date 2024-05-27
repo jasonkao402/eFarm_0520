@@ -84,8 +84,8 @@ List<List<Text>> genRandWeatherReport() {
 }
 
 class ToggleButton extends StatefulWidget {
-  final Widget? child;
-  const ToggleButton({super.key, required this.child});
+  final Widget? childT, childF;
+  const ToggleButton({super.key, this.childT, this.childF});
 
   @override
   State<ToggleButton> createState() => _ToggleButtonState();
@@ -93,7 +93,8 @@ class ToggleButton extends StatefulWidget {
 
 class _ToggleButtonState extends State<ToggleButton> {
   bool _isOn = false;
-
+  get isOn => _isOn;
+  
   void _toggleButton() {
     setState(() {
       _isOn = !_isOn;
@@ -109,7 +110,7 @@ class _ToggleButtonState extends State<ToggleButton> {
         backgroundColor:
             _isOn ? Colors.green : Colors.red, // Set button color
       ),
-      child: widget.child,
+      child: _isOn ? widget.childT : widget.childF,
     );
   }
 }
